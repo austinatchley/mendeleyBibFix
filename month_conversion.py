@@ -4,7 +4,6 @@ import sys
 
 month_dict = dict((v.lower(),k) for k,v in enumerate(calendar.month_abbr))
 del month_dict['']
-print(month_dict)
 
 def convert_line(input_data):
     if 'month' in input_data.lower():
