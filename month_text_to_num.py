@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+
+import bibtexparser
 import calendar
 import os
 import sys
 
-month_dict = dict((v.lower(),k) for k,v in enumerate(calendar.month_abbr))
+month_dict = dict((v.lower(), str(k)) for k,v in enumerate(calendar.month_abbr))
 del month_dict['']
 
 def convert_line(input_data):
@@ -16,12 +19,22 @@ def convert_line(input_data):
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
-    input_file_split = os.path.splitext(input_file)
 
-    output_lines = list()
+    if len(sys.argv) > 2:
+        output_file = sys.argv[2]
+    else:
+        output_file = "out.bib"
+
     with open(input_file, "r") as f:
-        for line in f:
-            output_lines.append(convert_line(line))
+        db = bibtexparser.load(f)
 
-    output_file = open(input_file_split[0] + '.out' + input_file_split[1], "w+")
-    output_file.write(''.join(output_lines))
+    for i, entry in enumerate(db.entries):
+        if 'month' in entry:
+            entry['month'] = month_dict[entry['month']]
+
+        db.entries[i] = entry
+
+    with open(output_file, "w") as bib:
+        bibtexparser.dump(db, bib)
+
+    
